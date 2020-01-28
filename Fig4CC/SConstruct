@@ -1,7 +1,7 @@
 from rsf.proj import *
 from decimal import Decimal
 '''
-This script and data plot cross-correlogram in Figure 4 from the paper "Urban Near-surface Seismic Monitoring using1Distributed Acoustic Sensing" by Gang Fang, Yunyue Elita Li, Yumin Zhao and Eileen R. Martin
+This script and data plot cross-correlogram in Figure 4 from the paper "Urban Near-surface Seismic Monitoring using Distributed Acoustic Sensing" by Gang Fang, Yunyue Elita Li, Yumin Zhao and Eileen R. Martin
 
 To run this script, you need to install Madagascar software(www.ahay.org).
 '''
