@@ -1,0 +1,212 @@
+from rsf.proj import *
+from decimal import Decimal
+'''
+This script and data plot cross-correlogram in Figure 4 from the paper "Urban Near-surface Seismic Monitoring using1Distributed Acoustic Sensing" by Gang Fang, Yunyue Elita Li, Yumin Zhao and Eileen R. Martin
+
+To run this script, you need to install Madagascar software(www.ahay.org).
+'''
+
+def wiggle(name, min1, max1, min2, max2, par):
+    return '''
+    wiggle title=%s grid1=n grid2=n
+           font=2 titlefat=2 labelfat=2 gridfat=3 labelsz=7 titlesz=7 zplot=0.8
+           label1='Time lag (sec)' label2='Channel Number'
+           screenratio=2.5 grid1=y grid2=y xll=3 yreverse=n
+           pclip=97 g1num0=0 g1num=2
+           min1=%g max1=%g min2=%g max2=%g
+    '''%(name, min1, max1, min2, max2) + par
+
+def graph(name, min1, max1, min2, max2, par):
+    return '''
+    graph title=%s
+          transp=y screenratio=2.5 grid1=n grid2=n
+          xll=3 yreverse=n
+          min2=%g max2=%g min1=%d max1=%d
+          wanttitle=n wantaxis=n plotfat=4
+    ''' %(name, mint, maxt, min2, max2) + par
+
+# for cross-correlation at 2016/10/12
+
+ccnt = Decimal('3004')
+ccdt = Decimal('0.02')
+ccot = -1*ccnt/2*ccdt
+
+mint = -1.5
+maxt = 1.5
+
+minfch = 160
+maxfch = 185
+
+minbch = 108
+maxbch = 130
+
+
+# select array
+trst_front  = 300
+trnum_front = 60
+trst_back   = 204
+trnum_back  = 63
+
+trst_frontshow = 156
+trst_backshow  = 107
+
+# plot parameters for front and back array
+ccwigparf = " label1='Time lag (sec)' label2='Channel Number'   screenratio=2.5 grid1=y grid2=y  xll=3 yreverse=y min1=%g max1=%g pclip=97 g1num0=0 g1num=2  "%(mint,maxt)
+ccwigparb = " label1='Time lag (sec)' label2='Channel Number'   screenratio=2.5 grid1=y grid2=y  xll=3 yreverse=n min1=%g max1=%g pclip=97 g1num0=0 g1num=2  "%(mint,maxt)
+
+# Plot Cross-correlation for 2016/10/12, front array
+
+Plot('SDAS20161012_FCCputw','SDAS20161012_FCCput',
+     '''
+     wiggle title='2016/10/12' grid1=n grid2=n
+            font=2 titlefat=2 labelfat=2 gridfat=3 labelsz=7 titlesz=7 zplot=0.8
+            label1='Time lag (sec)' label2='Channel Number'
+            screenratio=2.5 grid1=y grid2=y  xll=3 yreverse=y
+            pclip=97 g1num0=0 g1num=2
+            min1=%g max1=%g min2=%g max2=%g
+     '''%(mint, maxt, minfch, maxfch))
+
+Plot('SDAS20161012_tlag_front', 'SDAS20161012_tlag_front',
+     '''
+     put d1=0.5 o1=%d  |
+     smooth rect1=4 repeat=5 |
+     graph title='2016/10/12'
+           transp=y screenratio=2.5 grid1=n grid2=n
+           xll=3  plotcol=5 yreverse=y
+           min2=%g max2=%g min1=%d max1=%d
+           wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_frontshow, mint, maxt, minfch, maxfch))
+
+Plot('SDAS20161012_tlag_ref_front', 'SDAS20161012_tlag_ref_front',
+      '''
+      put d1=0.5 o1=%d  |
+      graph title='2016/10/12'
+            transp=y screenratio=2.5 grid1=n grid2=n
+            xll=3 yreverse=y plotcol=3 dash=2
+            min2=%g max2=%g min1=%d max1=%d
+            wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_frontshow, mint, maxt, minfch, maxfch))
+
+Result('SDAS20161012_tlag_front_FCC', 'SDAS20161012_FCCputw SDAS20161012_tlag_front SDAS20161012_tlag_ref_front', 'Overlay')
+
+
+# Plot Cross-correlation for 2016/10/12, back array
+
+Plot('SDAS20161012_BCCputw', 'SDAS20161012_BCCput',
+     '''
+     wiggle title='2016/10/12' grid1=n grid2=n
+            font=2 titlefat=2 labelfat=2 gridfat=3 labelsz=7 titlesz=7 zplot=0.8
+            label1='Time lag (sec)' label2='Channel Number'
+            screenratio=2.5 grid1=y grid2=y  xll=3 yreverse=n
+            pclip=97 g1num0=0 g1num=2
+            min1=%g max1=%g min2=%g max2=%g
+     '''%(mint, maxt, minbch, maxbch))
+
+# Plot picked time lag
+Plot('SDAS20161012_tlag_back','SDAS20161012_tlag_back',
+     '''
+     put d1=0.5 o1=%d |
+     smooth rect1=5 repeat=3 |
+     graph title='2016/10/12'
+           transp=y screenratio=2.5 grid1=n grid2=n
+           xll=3  plotcol=5 yreverse=n
+           min2=%g max2=%g min1=%d max1=%d
+           wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_backshow, mint, maxt, minbch, maxbch))
+
+# reference time lag
+Plot('SDAS20161012_tlag_ref_back', 'SDAS20161012_tlag_ref_back',
+       '''
+       put d1=0.5 o1=%d |
+       graph title='2016/10/12'
+           transp=y screenratio=2.5 grid1=n grid2=n
+           xll=3  plotcol=3 dash=2 yreverse=n
+           min2=%g max2=%g min1=%d max1=%d
+           wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_backshow, mint, maxt, minbch, maxbch))
+
+
+
+Result('SDAS20161012_tlag_back_FCC', 'SDAS20161012_BCCputw SDAS20161012_tlag_back SDAS20161012_tlag_ref_back', 'Overlay')
+
+
+# Plot Cross-correlation for 2016/11/21, front array
+trst_frontshow = 156
+trst_backshow  = 138
+Plot('SDAS20161121_FCCputw','SDAS20161121_FCCput',
+     '''
+     wiggle title='2016/11/21' grid1=n grid2=n
+            font=2 titlefat=2 labelfat=2 gridfat=3 labelsz=7 titlesz=7 zplot=0.8
+            label1='Time lag (sec)' label2='Channel Number'
+            screenratio=2.5 grid1=y grid2=y  xll=3 yreverse=y
+            pclip=97 g1num0=0 g1num=2
+            min1=%g max1=%g min2=%g max2=%g
+     '''%(mint, maxt, minfch, maxfch))
+
+Plot('SDAS20161121_tlag_front', 'SDAS20161121_tlag_front',
+     '''
+     put d1=0.5 o1=%d  |
+     smooth rect1=4 repeat=5 |
+     graph title='2016/11/21'
+           transp=y screenratio=2.5 grid1=n grid2=n
+           xll=3  plotcol=5 yreverse=y
+           min2=%g max2=%g min1=%d max1=%d
+           wanttitle=n wantaxis=n plotfat=4
+     '''%(trst_frontshow, mint, maxt, minfch, maxfch))
+
+Plot('SDAS20161121_tlag_ref_front', 'SDAS20161121_tlag_ref_front',
+      '''
+      put d1=0.5 o1=%d  |
+      graph title='2016/11/21'
+            transp=y screenratio=2.5 grid1=n grid2=n
+            xll=3 yreverse=y plotcol=3 dash=2
+            min2=%g max2=%g min1=%d max1=%d
+            wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_frontshow, mint, maxt, minfch, maxfch))
+
+Result('SDAS20161121_tlag_front_FCC', 'SDAS20161121_FCCputw SDAS20161121_tlag_front SDAS20161121_tlag_ref_front', 'Overlay')
+
+# Plot Cross-correlation for 2016/11/21, back array
+
+Plot('SDAS20161121_BCCputw', 'SDAS20161121_BCCput',
+     '''
+     wiggle title='2016/11/21' grid1=n grid2=n
+            font=2 titlefat=2 labelfat=2 gridfat=3 labelsz=7 titlesz=7 zplot=0.8
+            label1='Time lag (sec)' label2='Channel Number'
+            screenratio=2.5 grid1=y grid2=y  xll=3 yreverse=n
+            pclip=97 g1num0=0 g1num=2
+            min1=%g max1=%g min2=%g max2=%g
+     '''%(mint, maxt, minbch, maxbch))
+
+
+# Plot picked time lag
+Plot('SDAS20161121_tlag_back', 'SDAS20161121_tlag_back',
+     '''
+     put d1=-0.5 o1=%d |
+     smooth rect1=5 repeat=3 |
+     graph title='2016/10/12'
+           transp=y screenratio=2.5 grid1=n grid2=n
+           xll=3  plotcol=5 yreverse=n
+           min2=%g max2=%g min1=%d max1=%d
+           wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_backshow, mint, maxt, minbch, maxbch))
+
+
+
+# reference time lag
+Plot('SDAS20161121_tlag_ref_back','SDAS20161121_tlag_ref_back', 
+     '''
+     put d1=-0.5 o1=%d |
+     graph title='2016/11/21'
+           transp=y screenratio=2.5 grid1=n grid2=n
+           xll=3  plotcol=3 dash=2 yreverse=y
+           min2=%g max2=%g min1=%d max1=%d
+           wanttitle=n wantaxis=n plotfat=4
+      '''%(trst_backshow, mint, maxt, minbch, maxbch))
+
+Result('SDAS20161121_tlag_back_FCC', 'SDAS20161121_BCCputw SDAS20161121_tlag_back SDAS20161121_tlag_ref_back', 'Overlay')
+
+
+
+
+

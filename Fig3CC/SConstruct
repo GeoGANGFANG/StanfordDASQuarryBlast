@@ -1,0 +1,29 @@
+from rsf.proj import *
+
+'''
+This script and data plot cross-correlogram in Figure 3 from the paper "Urban Near-surface Seismic Monitoring using1Distributed Acoustic Sensing" by Gang Fang, Yunyue Elita Li, Yumin Zhao and Eileen R. Martin
+
+To run this script, you need to install Madagascar software(www.ahay.org).
+'''
+
+def wiggle(title):
+    return '''
+    sfwiggle
+    xpos=${SOURCES[1]} transp=y
+    screenratio=0.3 screenht=3.5
+    grid1=y grid2=y
+    yreverse=n pclip=98
+    max1=2 min1=-2 max2=210 min2=-5
+    title=%s
+    label2="Distance (m)" label1="Time lag (sec)" labelsz=7
+    font=2 titlefat=2 labelfat=2 gridfat=3 titlesz=7
+    xll=2 yll=2 plotfat=3
+    '''%title
+
+
+# 2016/10/12
+Result('SDAS20161012_cc', 'SDAS20161012_cc SDAS20161012_dis', wiggle('2016/10/12'))
+# 2016/11/21
+Result('SDAS20161121_cc', 'SDAS20161121_cc SDAS20161121_dis', wiggle('2016/11/21'))
+
+
